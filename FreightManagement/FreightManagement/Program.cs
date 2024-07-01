@@ -74,10 +74,9 @@ public class Program
 				},
 			]
 		};
-				
+		
 		schedule
-			.Days
-			.SelectMany(DaySchedulePrinter.PrintScheduleForDay)
+			.Days?.SelectMany(DaySchedulePrinter.PrintScheduleForDay)
 			.ToList()
 			.ForEach(Console.WriteLine);
 	}

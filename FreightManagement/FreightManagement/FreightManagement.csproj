@@ -8,7 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Files\" />
+    <None Remove="Files\coding-assigment-orders.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Files\coding-assigment-orders.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
