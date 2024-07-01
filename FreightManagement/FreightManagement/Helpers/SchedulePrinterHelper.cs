@@ -4,23 +4,15 @@ namespace FreightManagement.Helpers;
 public static class FlightSchedulePrinterHelper
 {
 	public static string PrintFlight(this Flight flight) =>
-		$"Flight: {flight.FlightNumber}, departure: {flight.DepartureCity}, arrival: {flight.ArrivalCity}";
+		$"flightNumber: {flight.FlightNumber}, departure: {flight.DepartureCity}, arrival: {flight.ArrivalCity}, day: {flight.Day}";
 }
 
-public static class DaySchedulePrinter
+public static class OrderSchedulePrinterHelper
 {
-	public static List<string> PrintScheduleForDay(this Day day)
-	{
-		var scheduleForDay = new List<string>();
-
-		if(day.Flights != null)
+	public static string PrintOrderSchedule(this ScheduledOrder order) => 
+		order.FlightNumber switch
 		{
-			foreach (var flight in day.Flights)
-			{
-				scheduleForDay.Add($"{FlightSchedulePrinterHelper.PrintFlight(flight)}, day: {day.Id}");
-			}
-		}
-				
-		return scheduleForDay;
-	}
+			Constants.Unscheduled => $"order: {order.OrderNumber}, flightNumber: {order.FlightNumber}",
+			_ => $"order: {order.OrderNumber}, flightNumber: {order.FlightNumber}, departure: {order.DepartureCity}, arrival: {order.ArrivalCity}, day: {order.ScheduledDay}"
+		};
 }

@@ -20,7 +20,7 @@ public class SchedulePrinterHelperTests
 			FlightNumber = 1
 		};
 
-		var expected = $"Flight: {flight.FlightNumber}, departure: {flight.DepartureCity}, arrival: {flight.ArrivalCity}";
+		var expected = $"flightNumber: {flight.FlightNumber}, departure: {flight.DepartureCity}, arrival: {flight.ArrivalCity}, day: {flight.Day}";
 
 		// Act 
 		var printFlight = FlightSchedulePrinterHelper.PrintFlight(flight);
@@ -34,37 +34,40 @@ public class SchedulePrinterHelperTests
 	}
 
 	[Test]
-	public void DaySchedulePrinter_Prints_Day_Details()
+	public void PrintOrder_UnscheduledOrder_ReturnsExpectedFormat()
 	{
 		// Arrange
-		var flight = new Flight
+		var unscheduledOrder = new ScheduledOrder
 		{
-			DepartureCity = "YYZ",
-			ArrivalCity = "YVR",
-			FlightNumber = 1
+			OrderNumber = "order-001",
+			FlightNumber = Constants.Unscheduled
 		};
 
-		var day = new Day
-		{
-			Id = 1,
-			Flights = new List<Flight> { flight }
-		};
-
-		var expectedFlight = $"Flight: {flight.FlightNumber}, departure: {flight.DepartureCity}, arrival: {flight.ArrivalCity}";
-
-		var expected = new List<string>
-		{
-			$"{expectedFlight}, day: {day.Id}"
-		};
-
-		// Act 
-		var printDay = DaySchedulePrinter.PrintScheduleForDay(day);
+		// Act
+		var result = unscheduledOrder.PrintOrderSchedule();
 
 		// Assert
-		Assert.Multiple(() =>
-		{
-			Assert.That(printDay, Is.Not.Null);
-			Assert.That(printDay, Is.EqualTo(expected));
-		});
+		Assert.That(result, Is.EqualTo($"order: {unscheduledOrder.OrderNumber}, flightNumber: {Constants.Unscheduled}"));
 	}
+
+	[Test]
+	public void PrintOrder_ScheduledOrder_ReturnsExpectedFormat()
+	{
+		// Arrange
+		var scheduledOrder = new ScheduledOrder
+		{
+			OrderNumber = "order-002",
+			FlightNumber = "1",
+			DepartureCity = "YUL",
+			ArrivalCity = "YYZ",
+			ScheduledDay = 1
+		};
+
+		// Act
+		var result = scheduledOrder.PrintOrderSchedule();
+
+		// Assert
+		Assert.That(result, Is.EqualTo($"order: {scheduledOrder.OrderNumber}, flightNumber: {scheduledOrder.FlightNumber}, departure: {scheduledOrder.DepartureCity}, arrival: {scheduledOrder.ArrivalCity}, day: {scheduledOrder.ScheduledDay}"));
+	}
+
 }
