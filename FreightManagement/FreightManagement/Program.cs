@@ -1,5 +1,6 @@
 ﻿using FreightManagement.Helpers;
 using FreightManagement.Models;
+using Newtonsoft.Json;
 
 namespace FreightManagement;
 public class Program
@@ -9,7 +10,7 @@ public class Program
 		PrintSeperator();
 		LoadFlightSchedule();
 		PrintSeperator();
-		LoadOrderSchedule();
+		LoadOrders();
 		PrintSeperator();
 	}
 
@@ -81,8 +82,56 @@ public class Program
 			.ForEach(Console.WriteLine);
 	}
 
-	public static void LoadOrderSchedule()
+	public static void LoadOrders()
 	{
-		Console.WriteLine("Order Schedule");
+		var filePath = "Files/coding-assigment-orders.json";
+
+		// Create a list to hold the Order objects
+		List<Order> orders = ReadOrdersData(filePath);
+		
+		// Print the list of orders
+		foreach (var order in orders)
+		{
+			Console.WriteLine($"Order Number: {order.OrderNumber}, Destination: {order.Destination}, Priority: {order.Priority}");
+		}
+	}
+
+	private static List<Order> ReadOrdersData(string filePath)
+	{
+		List<Order> orders = new List<Order>();
+
+		try
+		{
+			using StreamReader r = new StreamReader(filePath);
+			string json = r.ReadToEnd();
+			var ordersData = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(json);
+
+			// Initialize the priority counter
+			int priorityCounter = 1;
+
+			// Iterate through the dictionary to create Order objects
+			foreach (var entry in ordersData)
+			{
+				var order = new Order
+				{
+					OrderNumber = entry.Key,
+					Destination = entry.Value["destination"],
+					Priority = priorityCounter++
+				};
+
+				orders.Add(order);
+			}
+		}
+
+		catch (FileNotFoundException)
+		{
+			Console.WriteLine($"File {filePath} not found.");
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine($"Error reading JSON file: {e.Message}");
+		}
+
+		return orders;
 	}
 }
