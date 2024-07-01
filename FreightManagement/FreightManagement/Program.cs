@@ -111,7 +111,10 @@ public class Program
 		Console.WriteLine("Scheduling Orders in Flights.....");
 		var scheduledOrders = new List<ScheduledOrder>();
 		
-		var ordersByDestination = orders.OrderBy(o => o.Priority).GroupBy(x => x.Destination).SelectMany(grp => grp.ToList());
+		var ordersByDestination = orders
+									.OrderBy(o => o.Priority)
+									.GroupBy(x => x.Destination)
+									.SelectMany(grp => grp.ToList());
 
 		var flightsByDestination = new Dictionary<string, List<Flight>>();
 
@@ -143,7 +146,10 @@ public class Program
 			}
 
 			// optimize by day and capacity - choose the earliest flight that still has capacity
-			var orderedFlights = flights.OrderBy(f => f.Day).OrderByDescending(f => f.Capacity);
+			// fill the ones closer to getting full before moving to ones that have higher capacity
+			var orderedFlights = flights
+									.OrderBy(f => f.Day)
+									.ThenBy(f => f.Capacity);
 
 			// no flights to that destination have any capacity left, mark as unscheduled.
 			if(!orderedFlights.Any(f => f.Capacity > 0))

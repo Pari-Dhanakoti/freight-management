@@ -103,4 +103,32 @@ public class ScheduleOrdersTests
 			Assert.That(scheduledOrders.Item2.Flights.Single(flight => flight.FlightNumber == 1).Capacity, Is.EqualTo(0));
 		});
 	}
+
+	[Test]
+	public void ScheduleOrders_Optimally_Fills_By_Capacity()
+	{
+		_testSchedule = new Schedule
+		{
+			Flights = new List<Flight>
+			{
+				new Flight { FlightNumber = 1, DepartureCity = "YUL", ArrivalCity = "YYZ", Day = 1, Capacity = 2 },
+				new Flight { FlightNumber = 2, DepartureCity = "YUL", ArrivalCity = "YYZ", Day = 1, Capacity = 1 },
+				new Flight { FlightNumber = 3, DepartureCity = "YUL", ArrivalCity = "YVZ", Day = 1, Capacity = 10 }
+			}
+		};
+
+		var orders = new List<Order>
+		{
+			new Order { OrderNumber = "order-001", Destination = "YYZ", Priority = 1 }			
+		};
+
+		var expectedChosenFlight = new Flight { FlightNumber = 2, DepartureCity = "YUL", ArrivalCity = "YYZ", Day = 1, Capacity = 1 };
+
+		// Act
+		var scheduledOrders = FreightManagement.Program.ScheduleOrders(orders, _testSchedule);
+
+		// Assert
+		Assert.That(scheduledOrders.Item1.Single().FlightNumber, Is.EqualTo(expectedChosenFlight.FlightNumber.ToString()));
+		Assert.That(scheduledOrders.Item1.Single().ScheduledDay, Is.EqualTo(expectedChosenFlight.Day));
+	}	
 }
